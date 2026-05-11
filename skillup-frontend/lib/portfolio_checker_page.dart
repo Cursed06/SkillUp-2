@@ -18,9 +18,7 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
   bool _isAnalyzing = false;
   Map<String, dynamic>? _result;
 
-  final String _apiUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:3000/api/match' 
-      : 'http://localhost:3000/api/match';
+  final String _apiUrl = 'https://your-vercel-link.vercel.app/api/match';
 
   Future<void> _uploadAndAnalyzeFile() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
