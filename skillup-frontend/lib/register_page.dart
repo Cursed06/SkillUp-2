@@ -24,9 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
-  final String _apiUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:3000/api/register' 
-      : 'http://localhost:3000/api/register';
+  final String _apiUrl = 'https://skill-up-2.vercel.app/api/register'
 
   @override
   void dispose() {
