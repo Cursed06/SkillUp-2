@@ -23,9 +23,7 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
   String? _cvText;
   String? _fileName;
 
-  final String _apiUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:3000/api/match' 
-      : 'http://localhost:3000/api/match';
+  final String _apiUrl = 'https://skill-up-2.vercel.app/api/match';
 
   Future<void> _pickAndExtractCV() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
