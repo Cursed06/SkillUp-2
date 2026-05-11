@@ -23,9 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // 2. Define your backend endpoint
-  final String _apiUrl = Platform.isAndroid 
-      ? 'http://10.0.2.2:3000/api/login' 
-      : 'http://localhost:3000/api/login';
+  final String _apiUrl = 'https://skill-up-2.vercel.app/api/login'
 
   @override
   void dispose() {
