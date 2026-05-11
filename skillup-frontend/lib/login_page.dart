@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // 2. Define your backend endpoint
-  final String _apiUrl = 'https://skill-up-2.vercel.app/api/login'
+  final String _apiUrl = 'https://skill-up-2.vercel.app/api/login';
 
   @override
   void dispose() {
@@ -53,10 +53,7 @@ class _LoginPageState extends State<LoginPage> {
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'email': email, 'password': password}),
       );
 
       if (!mounted) return;
@@ -104,12 +101,15 @@ class _LoginPageState extends State<LoginPage> {
           // --- Konten utama halaman login ---
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 40),
-                  
+
                   Center(
                     child: Container(
                       width: 72,
@@ -123,13 +123,19 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF13B5EA).withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF13B5EA,
+                            ).withValues(alpha: 0.3),
                             blurRadius: 24,
                             offset: const Offset(0, 8),
-                          )
-                        ]
+                          ),
+                        ],
                       ),
-                      child: const Icon(Icons.bolt, color: Colors.white, size: 44),
+                      child: const Icon(
+                        Icons.bolt,
+                        color: Colors.white,
+                        size: 44,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -157,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 48),
-                  
+
                   const Text(
                     'Email',
                     style: TextStyle(
@@ -174,7 +180,11 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       hintText: 'your.email@university.edu',
                       hintStyle: const TextStyle(color: Colors.white30),
-                      prefixIcon: const Icon(Icons.mail_outline, color: Colors.white54, size: 20),
+                      prefixIcon: const Icon(
+                        Icons.mail_outline,
+                        color: Colors.white54,
+                        size: 20,
+                      ),
                       filled: true,
                       fillColor: const Color(0xFF151C2C),
                       enabledBorder: OutlineInputBorder(
@@ -188,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  
+
                   const Text(
                     'Password',
                     style: TextStyle(
@@ -205,10 +215,16 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       hintText: '••••••••',
                       hintStyle: const TextStyle(color: Colors.white30),
-                      prefixIcon: const Icon(Icons.lock_outline, color: Colors.white54, size: 20),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.white54,
+                        size: 20,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.white54,
                           size: 20,
                         ),
@@ -230,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
@@ -251,9 +267,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   Container(
                     height: 56,
                     decoration: BoxDecoration(
@@ -263,7 +279,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _login, // Wired up the actual function
+                      onPressed: _isLoading
+                          ? null
+                          : _login, // Wired up the actual function
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
@@ -283,19 +301,26 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 48),
-                  
+
                   Center(
                     child: RichText(
                       text: TextSpan(
                         text: "Don't have an account? ",
-                        style: const TextStyle(color: Colors.white60, fontSize: 14),
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Sign up',
@@ -303,12 +328,15 @@ class _LoginPageState extends State<LoginPage> {
                               color: Color(0xFF13B5EA),
                               fontWeight: FontWeight.w600,
                             ),
-                            recognizer: TapGestureRecognizer()..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const RegisterPage()),
-                              );
-                            },
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RegisterPage(),
+                                  ),
+                                );
+                              },
                           ),
                         ],
                       ),

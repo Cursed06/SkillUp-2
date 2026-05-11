@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
-  final String _apiUrl = 'https://skill-up-2.vercel.app/api/register'
+  final String _apiUrl = 'https://skill-up-2.vercel.app/api/register';
 
   @override
   void dispose() {
@@ -39,7 +39,10 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _register() async {
     if (_passwordController.text != _confirmController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match!'), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text('Passwords do not match!'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
@@ -68,14 +71,20 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration failed. Please try again.'), backgroundColor: Colors.redAccent),
+          const SnackBar(
+            content: Text('Registration failed. Please try again.'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Network error. Cannot reach server.'), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text('Network error. Cannot reach server.'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
     }
   }
@@ -93,7 +102,14 @@ class _RegisterPageState extends State<RegisterPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -105,19 +121,32 @@ class _RegisterPageState extends State<RegisterPage> {
             prefixIcon: Icon(prefixIcon, color: Colors.white54, size: 20),
             suffixIcon: isPassword
                 ? IconButton(
-                    icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white54, size: 20),
+                    icon: Icon(
+                      isVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white54,
+                      size: 20,
+                    ),
                     onPressed: onVisibilityToggle,
                   )
                 : null,
             filled: true,
             fillColor: const Color(0xFF151C2C),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF222B40))),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF13B5EA))),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF222B40)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF13B5EA)),
+            ),
           ),
         ),
         if (helperText != null) ...[
           const SizedBox(height: 8),
-          Text(helperText, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+          Text(
+            helperText,
+            style: const TextStyle(color: Colors.white38, fontSize: 12),
+          ),
         ],
         const SizedBox(height: 16),
       ],
@@ -132,76 +161,169 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Center(
                     child: Container(
-                      width: 64, height: 64,
+                      width: 64,
+                      height: 64,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(18),
-                        boxShadow: [BoxShadow(color: const Color(0xFF13B5EA).withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 6))]
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF13B5EA,
+                            ).withValues(alpha: 0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      child: const Icon(Icons.bolt, color: Colors.white, size: 36),
+                      child: const Icon(
+                        Icons.bolt,
+                        color: Colors.white,
+                        size: 36,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   Center(
                     child: ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)]).createShader(bounds),
-                      child: const Text('SkillUp', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)],
+                      ).createShader(bounds),
+                      child: const Text(
+                        'SkillUp',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Center(child: Text('Create your account', style: TextStyle(color: Colors.white60, fontSize: 15))),
+                  const Center(
+                    child: Text(
+                      'Create your account',
+                      style: TextStyle(color: Colors.white60, fontSize: 15),
+                    ),
+                  ),
                   const SizedBox(height: 32),
 
-                  _buildTextField(label: 'Full Name', hintText: 'Alex Johnson', prefixIcon: Icons.person_outline, controller: _nameController),
-                  _buildTextField(label: 'Email', hintText: 'your.email@university.edu', prefixIcon: Icons.mail_outline, controller: _emailController),
-                  _buildTextField(label: 'University', hintText: 'Your University', prefixIcon: Icons.account_balance_outlined, controller: _uniController),
                   _buildTextField(
-                    label: 'Password', hintText: '••••••••', prefixIcon: Icons.lock_outline,
-                    controller: _passwordController, isPassword: true, isVisible: _isPasswordVisible,
-                    onVisibilityToggle: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                    helperText: 'At least 8 characters with uppercase, lowercase, and numbers',
+                    label: 'Full Name',
+                    hintText: 'Alex Johnson',
+                    prefixIcon: Icons.person_outline,
+                    controller: _nameController,
                   ),
                   _buildTextField(
-                    label: 'Confirm Password', hintText: '••••••••', prefixIcon: Icons.lock_outline,
-                    controller: _confirmController, isPassword: true, isVisible: _isConfirmPasswordVisible,
-                    onVisibilityToggle: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                    label: 'Email',
+                    hintText: 'your.email@university.edu',
+                    prefixIcon: Icons.mail_outline,
+                    controller: _emailController,
                   ),
-                  
+                  _buildTextField(
+                    label: 'University',
+                    hintText: 'Your University',
+                    prefixIcon: Icons.account_balance_outlined,
+                    controller: _uniController,
+                  ),
+                  _buildTextField(
+                    label: 'Password',
+                    hintText: '••••••••',
+                    prefixIcon: Icons.lock_outline,
+                    controller: _passwordController,
+                    isPassword: true,
+                    isVisible: _isPasswordVisible,
+                    onVisibilityToggle: () => setState(
+                      () => _isPasswordVisible = !_isPasswordVisible,
+                    ),
+                    helperText:
+                        'At least 8 characters with uppercase, lowercase, and numbers',
+                  ),
+                  _buildTextField(
+                    label: 'Confirm Password',
+                    hintText: '••••••••',
+                    prefixIcon: Icons.lock_outline,
+                    controller: _confirmController,
+                    isPassword: true,
+                    isVisible: _isConfirmPasswordVisible,
+                    onVisibilityToggle: () => setState(
+                      () => _isConfirmPasswordVisible =
+                          !_isConfirmPasswordVisible,
+                    ),
+                  ),
+
                   const SizedBox(height: 16),
                   Container(
                     height: 56,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), gradient: const LinearGradient(colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)])),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF13B5EA), Color(0xFF2C6CFF)],
+                      ),
+                    ),
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _register,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                          Text(
+                            'Create Account',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
                   Center(
                     child: RichText(
                       text: TextSpan(
                         text: 'Already have an account? ',
-                        style: const TextStyle(color: Colors.white60, fontSize: 14),
+                        style: const TextStyle(
+                          color: Colors.white60,
+                          fontSize: 14,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Sign in',
-                            style: const TextStyle(color: Color(0xFF13B5EA), fontWeight: FontWeight.w600),
-                            recognizer: TapGestureRecognizer()..onTap = () => Navigator.pop(context),
+                            style: const TextStyle(
+                              color: Color(0xFF13B5EA),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => Navigator.pop(context),
                           ),
                         ],
                       ),
