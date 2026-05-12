@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data'; // Use this instead of dart:io
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -21,24 +21,33 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
   final String _apiUrl = 'https://skillup-api.vercel.app/api/match';
 
   Future<void> _uploadAndAnalyzeFile() async {
+    // 1. Pick the file with bytes enabled (Crucial for Web)
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
       type: FileType.custom, 
       allowedExtensions: ['pdf'],
+      withData: true, 
     );
-    if (fileResult == null || fileResult.files.single.path == null) return;
+    
+    // Check bytes instead of path
+    if (fileResult == null || fileResult.files.single.bytes == null) return;
 
     setState(() { _isAnalyzing = true; _result = null; });
 
     try {
-      File file = File(fileResult.files.single.path!);
-      final List<int> bytes = await file.readAsBytes();
+      // 2. Load from memory bytes instead of a local File path
+      final Uint8List bytes = fileResult.files.single.bytes!;
       final PdfDocument document = PdfDocument(inputBytes: bytes);
+      
       String extractedText = PdfTextExtractor(document).extractText();
       document.dispose();
 
+      if (extractedText.trim().isEmpty) {
+        throw Exception("Could not extract text from this PDF.");
+      }
+
       _sendToBackend("Portfolio File Analysis", extractedText);
     } catch (e) {
-      _showError(e.toString());
+      _showError("Error reading PDF: $e");
     }
   }
 
@@ -48,7 +57,6 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
       return;
     }
     setState(() { _isAnalyzing = true; _result = null; });
-    // In a real app, backend would scrape the URL. For MVP, we pass the URL as content.
     _sendToBackend("Portfolio Website Analysis", "Analyze portfolio at: ${_urlController.text}");
   }
 
@@ -73,8 +81,12 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
   }
 
   void _showError(String message) {
-    setState(() => _isAnalyzing = false);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.redAccent));
+    if (mounted) {
+      setState(() => _isAnalyzing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.redAccent)
+      );
+    }
   }
 
   @override
@@ -116,7 +128,7 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
                               SizedBox(height: 12),
                               Text('Tap to Upload Portfolio Files', style: TextStyle(color: Colors.white70, fontSize: 14)),
                               SizedBox(height: 4),
-                              Text('PDF, ZIP, or multiple files', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                              Text('PDF supported', style: TextStyle(color: Colors.white38, fontSize: 12)),
                             ],
                           ),
                         ),
@@ -170,7 +182,6 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
                   ),
                 ),
 
-                // Results UI
                 if (_result != null) ...[
                   const SizedBox(height: 32),
                   _buildDarkResultCard(
@@ -179,10 +190,10 @@ class _PortfolioCheckerPageState extends State<PortfolioCheckerPage> {
                   ),
                   const SizedBox(height: 16),
                   _buildDarkResultCard(
-                    title: "Actionable Feedback", icon: Icons.edit_document, color: Colors.greenAccent,
+                    title: "AI Feedback", icon: Icons.edit_document, color: Colors.greenAccent,
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: (_result!['cvFeedback'] as List).map((fb) => Padding(
+                      children: (_result!['skillGaps'] as List).map((fb) => Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
