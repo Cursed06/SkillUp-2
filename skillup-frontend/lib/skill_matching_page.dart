@@ -32,7 +32,7 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
-        withData: true, // This is mandatory for Web to populate result.files.first.bytes
+        withData: true, // This is the most important line
       );
 
       if (result == null || result.files.isEmpty) return;
