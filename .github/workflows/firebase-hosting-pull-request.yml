@@ -26,7 +26,7 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SKILLUP_AI_2026 }}'
+          firebaseToken: '${{ secrets.FIREBASE_TOKEN }}'
           channelId: live
           projectId: skillup-ai-2026
           # ADD THIS line here too so Firebase knows where the built files are:
