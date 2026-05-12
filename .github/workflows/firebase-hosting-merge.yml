@@ -25,4 +25,4 @@ jobs:
 
       - name: Deploy to Firebase
         working-directory: skillup-frontend
-        run: firebase deploy --token "${{ secrets.FIREBASE_TOKEN }}" --only hosting --project skillup-ai
+        run: firebase deploy --token "${{ secrets.FIREBASE_TOKEN }}" --only hosting --project skillup-ai-2026
