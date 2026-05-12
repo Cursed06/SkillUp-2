@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data'; // Required for Uint8List on Web
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
@@ -23,34 +23,50 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
   String? _cvText;
   String? _fileName;
 
+  // The Vercel URL you verified earlier
   final String _apiUrl = 'https://skillup-api.vercel.app/api/match';
 
+  /// Picks a PDF and extracts text using memory bytes (Web Compatible)
   Future<void> _pickAndExtractCV() async {
-    FilePickerResult? fileResult = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-
-    if (fileResult == null || fileResult.files.single.path == null) return;
-
-    // Show loading overlay while parsing the PDF
-    setState(() => _isAnalyzing = true);
-
     try {
-      File file = File(fileResult.files.single.path!);
-      final List<int> bytes = await file.readAsBytes();
-      final PdfDocument document = PdfDocument(inputBytes: bytes);
-      String extractedText = PdfTextExtractor(document).extractText();
-      document.dispose();
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        withData: true, // This is mandatory for Web to populate result.files.first.bytes
+      );
 
-      setState(() {
-        _cvText = extractedText;
-        _fileName = fileResult.files.single.name;
-      });
+      if (result == null || result.files.isEmpty) return;
+
+      setState(() => _isAnalyzing = true);
+
+      // Web does not support .path, so we use .bytes directly
+      final Uint8List? fileBytes = result.files.first.bytes;
+      
+      if (fileBytes != null) {
+        // Initialize Syncfusion PDF document from memory bytes
+        final PdfDocument document = PdfDocument(inputBytes: fileBytes);
+        
+        // Extract text content from the PDF
+        String extractedText = PdfTextExtractor(document).extractText();
+        document.dispose();
+
+        setState(() {
+          _cvText = extractedText;
+          _fileName = result.files.first.name;
+          _result = null; // Reset previous results
+        });
+
+        if (extractedText.trim().isEmpty) {
+          throw Exception("Could not extract text from the selected PDF.");
+        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error reading PDF: $e'), backgroundColor: Colors.redAccent)
+          SnackBar(
+            content: Text('Error: $e'), 
+            backgroundColor: Colors.redAccent
+          )
         );
       }
     } finally {
@@ -58,18 +74,15 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
     }
   }
 
+  /// Sends the extracted CV text and Job Title to the Vercel Backend
   Future<void> _analyzeMatch() async {
     if (_jobController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a job position'), backgroundColor: Colors.redAccent)
-      );
+      _showError('Please enter a job position');
       return;
     }
 
     if (_cvText == null || _cvText!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload your CV first'), backgroundColor: Colors.redAccent)
-      );
+      _showError('Please upload your CV first');
       return;
     }
 
@@ -81,26 +94,34 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
     try {
       final response = await http.post(
         Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: jsonEncode({
-          'jobTitle': _jobController.text,
-          'cvContent': _cvText, // Now using the actual uploaded CV text!
+          'jobTitle': _jobController.text.trim(),
+          'cvContent': _cvText, 
         }),
       );
 
       if (response.statusCode == 200) {
         setState(() => _result = jsonDecode(response.body));
       } else {
-        throw Exception('Server error: ${response.statusCode}');
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['error'] ?? 'Server error: ${response.statusCode}');
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent)
-        );
-      }
+      _showError('Analysis failed: $e');
     } finally {
       setState(() => _isAnalyzing = false);
+    }
+  }
+
+  void _showError(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.redAccent)
+      );
     }
   }
 
@@ -114,40 +135,61 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                const Center(child: Text('Skill Matching', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold))),
+                const Center(
+                  child: Text(
+                    'Skill Matching', 
+                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)
+                  )
+                ),
                 const SizedBox(height: 8),
-                const Center(child: Text('Find your skill gaps for any job', style: TextStyle(color: Colors.white54, fontSize: 14))),
+                const Center(
+                  child: Text(
+                    'Find your skill gaps for any job', 
+                    style: TextStyle(color: Colors.white54, fontSize: 14)
+                  )
+                ),
                 const SizedBox(height: 32),
                 
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(color: const Color(0xFF151C2C), borderRadius: BorderRadius.circular(16)),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF151C2C), 
+                    borderRadius: BorderRadius.circular(16)
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Job Position', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Job Position', 
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                      ),
                       const SizedBox(height: 16),
                       TextField(
                         controller: _jobController,
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          hintText: 'e.g., Frontend Developer, Full Stack Engin...',
+                          hintText: 'e.g., Frontend Developer...',
                           hintStyle: const TextStyle(color: Colors.white38),
                           prefixIcon: const Icon(Icons.search, color: Colors.white54),
                           filled: true,
                           fillColor: const Color(0xFF1C2438),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12), 
+                            borderSide: BorderSide.none
+                          ),
                         ),
                       ),
                       
                       const SizedBox(height: 24),
                       
-                      // --- NEW: Upload CV Section ---
-                      const Text('Your CV', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Your CV', 
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)
+                      ),
                       const SizedBox(height: 16),
                       InkWell(
-                        onTap: _pickAndExtractCV,
+                        onTap: _isAnalyzing ? null : _pickAndExtractCV,
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -181,32 +223,36 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
                           ),
                         ),
                       ),
-                      // ------------------------------
 
                       const SizedBox(height: 24),
                       
                       SizedBox(
-                        width: double.infinity, height: 48,
+                        width: double.infinity, 
+                        height: 48,
                         child: ElevatedButton.icon(
                           onPressed: _isAnalyzing ? null : _analyzeMatch,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1A3E6B),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          icon: const Icon(Icons.track_changes, color: Colors.white54, size: 20),
-                          label: const Text('Analyze Match', style: TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
+                          icon: const Icon(Icons.track_changes, color: Colors.white70, size: 20),
+                          label: const Text(
+                            'Analyze Match', 
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
                       const Text('Popular positions:', style: TextStyle(color: Colors.white54, fontSize: 13)),
                       const SizedBox(height: 12),
                       Wrap(
-                        spacing: 8, runSpacing: 8,
+                        spacing: 8, 
+                        runSpacing: 8,
                         children: [
                           _buildChip('Frontend Developer'),
                           _buildChip('Backend Developer'),
                           _buildChip('Full Stack Engineer'),
-                          _buildChip('UX Designer'),
+                          _buildChip('Data Scientist'),
                         ],
                       ),
                     ],
@@ -216,15 +262,27 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
                 if (_result != null) ...[
                   const SizedBox(height: 32),
                   _buildDarkResultCard(
-                    title: "Match Score", icon: Icons.analytics_outlined, color: Colors.blueAccent,
-                    content: Text("${_result!['matchScore']}%", style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                    title: "Match Score", 
+                    icon: Icons.analytics_outlined, 
+                    color: Colors.blueAccent,
+                    content: Text(
+                      "${_result!['matchScore']}%", 
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildDarkResultCard(
-                    title: "Skill Gaps to Fill", icon: Icons.radar, color: Colors.orangeAccent,
+                    title: "Skill Gaps to Fill", 
+                    icon: Icons.radar, 
+                    color: Colors.orangeAccent,
                     content: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: (_result!['skillGaps'] as List).map((gap) => Text("• $gap", style: const TextStyle(fontSize: 14, color: Colors.white70, height: 1.5))).toList(),
+                      children: (_result!['skillGaps'] as List).map((gap) => 
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text("• $gap", style: const TextStyle(fontSize: 14, color: Colors.white70, height: 1.4)),
+                        )
+                      ).toList(),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -244,7 +302,9 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C2438), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF2A354E), width: 0.5),
+          color: const Color(0xFF1C2438), 
+          borderRadius: BorderRadius.circular(8), 
+          border: Border.all(color: const Color(0xFF2A354E), width: 0.5),
         ),
         child: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
       ),
@@ -253,14 +313,20 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
 
   Widget _buildDarkResultCard({required String title, required IconData icon, required Color color, required Widget content}) {
     return Container(
-      width: double.infinity, padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: const Color(0xFF151C2C), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFF2A354E))),
+      width: double.infinity, 
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF151C2C), 
+        borderRadius: BorderRadius.circular(16), 
+        border: Border.all(color: const Color(0xFF2A354E))
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: color, size: 22), const SizedBox(width: 12),
+              Icon(icon, color: color, size: 22), 
+              const SizedBox(width: 12),
               Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: color, fontSize: 16)),
             ],
           ),
