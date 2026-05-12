@@ -33,7 +33,7 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
-        withData: true, // This is the most important line
+        withData: true, // This is mandatory for Web
       );
 
       if (result == null || result.files.isEmpty) return;
@@ -41,7 +41,7 @@ class _SkillMatchingPageState extends State<SkillMatchingPage> {
       setState(() => _isAnalyzing = true);
 
       // Web does not support .path, so we use .bytes directly
-      final Uint8List? fileBytes = result.files.first.bytes;
+      Uint8List? fileBytes = result.files.first.bytes;
       
       if (fileBytes != null) {
         // Initialize Syncfusion PDF document from memory bytes
