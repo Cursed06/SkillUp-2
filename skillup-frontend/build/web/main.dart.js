@@ -88378,7 +88378,7 @@ if(J.cy(f)===0||J.cy(e)===0){n.c.ap(t.T).f.jo(B.QG)
 s=1
 break}n.ad(new A.amX(n))
 p=4
-j=A.fq("https://skill-up-2.vercel.app/api/login")
+j=A.fq("https://skillup-api.vercel.app/api/login")
 i=t.N
 h=A.at(["Content-Type","application/json"],i,i)
 s=7
@@ -88496,7 +88496,7 @@ xm(a,b){return this.afg(a,b)},
 afg(a,b){var s=0,r=A.O(t.H),q=1,p=[],o=[],n=this,m,l,k,j,i,h,g
 var $async$xm=A.P(function(c,d){if(c===1){p.push(d)
 s=q}for(;;)switch(s){case 0:q=3
-k=A.fq("https://skill-up-2.vercel.app/api/match")
+k=A.fq("https://skillup-api.vercel.app/api/match")
 j=t.N
 i=A.at(["Content-Type","application/json"],j,j)
 s=6
@@ -88617,7 +88617,7 @@ if(h.a.a!==n.z.a.a){n.c.ap(t.T).f.jo(B.QE)
 s=1
 break}n.ad(new A.aom(n))
 p=4
-l=A.fq("https://skill-up-2.vercel.app/api/register")
+l=A.fq("https://skillup-api.vercel.app/api/register")
 k=t.N
 j=A.at(["Content-Type","application/json"],k,k)
 s=7
@@ -88723,7 +88723,7 @@ if(j==null||j.length===0){m.c.ap(t.T).f.jo(B.QF)
 s=1
 break}m.ad(new A.aq2(m))
 p=4
-j=A.fq("https://skill-up-2.vercel.app/api/match")
+j=A.fq("https://skillup-api.vercel.app/api/match")
 i=t.N
 h=A.at(["Content-Type","application/json"],i,i)
 s=7
