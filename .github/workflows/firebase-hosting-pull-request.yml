@@ -14,13 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      # ADD THIS STEP: This installs Flutter on the GitHub server
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      # THIS IS YOUR BUILD SCRIPT:
-      - run: flutter pub get && flutter build web --release
+      # ADD THIS 'working-directory' line below:
+      - name: Build Flutter Web
+        working-directory: skillup-frontend
+        run: flutter pub get && flutter build web --release
       
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -28,3 +29,5 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SKILLUP_AI }}'
           channelId: live
           projectId: skillup-ai
+          # ADD THIS line here too so Firebase knows where the built files are:
+          entryPoint: skillup-frontend
