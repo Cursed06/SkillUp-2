@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'dart:typed_data'; // Required for Uint8List on Web
+import 'dart:typed_data'; // Use this instead of dart:io
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'package:skillup/loading_overlay.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'loading_overlay.dart';
+// DO NOT IMPORT DART:IO
 
 class SkillMatchingPage extends StatefulWidget {
   const SkillMatchingPage({super.key});
