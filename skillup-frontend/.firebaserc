@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "skillup-ai-2026"
-  }
+  },
+  "targets": {
+    "skillup-ai-2026": {
+      "hosting": {
+        "skillup-app": [
+          "skillup-ai-2026"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
